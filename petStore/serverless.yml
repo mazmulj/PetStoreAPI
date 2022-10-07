@@ -1,0 +1,109 @@
+org: mazmul
+console: true
+service: petStore
+frameworkVersion: '3'
+
+# custom:
+#   tableName: 'users-table-${sls:stage}'
+
+provider:
+  name: aws
+  region: ca-central-1
+  runtime: nodejs14.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:DescribeTable
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "*"
+#   environment:
+#     USERS_TABLE: ${self:custom.tableName}
+
+resources:
+  Resources:
+    Store:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: 'order'
+    Inventory:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: 'inventory'
+    PetTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: 'petTable'
+
+functions:
+  create:
+    handler: src/handler/createOrder.createOrder
+    events:
+      - http:
+          path: store/order
+          method: post
+          cors: true
+  get:
+    handler: src/handler/getOrder.getOrder
+    events:
+      - http:
+          path: store/order/{id}
+          method: get
+          cors: true
+  delete:
+    handler: src/handler/deleteOrder.deleteOrder
+    events:
+      - http:
+          path: store/order/{id}
+          method: delete
+          cors: true
+  list:
+    handler: src/handler/getInventory.getInventory
+    events:
+      - http:
+          path: store/inventory
+          method: get
+          cors: true
+  post:
+    handler: src/handler/createPet.createPet
+    events:
+      - http:
+          path: pet
+          method: post
+          cors: true
