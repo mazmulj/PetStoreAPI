@@ -23,7 +23,7 @@ module.exports.createPet = (event, context, callback) =>{
             //     id: event.tags.id,
             //     name: event.tags.name
             // },
-            status: event.status
+            orderStatus: event.orderStatus
         }
     };
     dynamoDB.put(params, (error, event) =>{
