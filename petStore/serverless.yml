@@ -107,3 +107,24 @@ functions:
           path: pet
           method: post
           cors: true
+  getPet:
+    handler: src/handler/getPet.getPet
+    events:
+      - http:
+          path: pet/{id}
+          method: get
+          cors: true
+  deletePet:
+    handler: src/handler/deletePet.deletePet
+    events:
+      - http:
+          path: pet/{id}
+          method: delete
+          cors: true
+  getByStatus:
+    handler: src/handler/findByStatus.findByStatus
+    events:
+      - http:
+          path: pet/{id}
+          method: get
+          cors: true
